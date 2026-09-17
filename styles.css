@@ -7865,3 +7865,50 @@ false&quot;
     transform: none !important
   }
 }
+
+/* Bug Blaster — shoot'em up pixel art compact. */
+.j01-shmup {
+  width: 100%;
+  margin: 0 0 48px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: #0c1117;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, .22);
+  font-family: "Geist Pixel", monospace;
+}
+
+.j01-shmup__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  color: #8a8f98;
+  letter-spacing: .1em;
+}
+
+.j01-shmup__bar div { display: flex; align-items: baseline; gap: 13px }
+.j01-shmup__bar strong { color: #68cc58; font-size: 18px; line-height: 1 }
+.j01-shmup__bar span { font-size: 10px; letter-spacing: .04em }
+.j01-shmup__bar small { font-size: 8px; white-space: nowrap }
+
+.j01-shmup canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8 / 3;
+  outline: 0;
+  cursor: crosshair;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+
+.j01-shmup canvas:focus-visible { box-shadow: inset 0 0 0 2px #1d70d9 }
+
+@media (max-width: 600px) {
+  .j01-shmup { margin-bottom: 34px }
+  .j01-shmup__bar div { align-items: flex-start; flex-direction: column; gap: 6px }
+  .j01-shmup__bar small { display: none }
+  .j01-shmup canvas { aspect-ratio: 4 / 2.2 }
+}

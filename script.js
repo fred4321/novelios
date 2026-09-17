@@ -695,6 +695,214 @@
     whenVisible([viewport], function () { viewport.classList.add("is-live"); }, { threshold: 0.05 });
   });
 
+  // Bug Blaster : shoot'em up canvas volontairement compact et sans dépendance.
+  var shmup = document.querySelector("[data-j01-shmup]");
+  if (shmup) {
+    var gameCanvas = shmup.querySelector("canvas");
+    var gameContext = gameCanvas.getContext("2d");
+    var gameWidth = gameCanvas.width;
+    var gameHeight = gameCanvas.height;
+    var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 40, h: 38 };
+    var shots = [];
+    var threats = [];
+    var threatNames = ["BUG", "RETARD", "PANNE", "IMPRÉVU"];
+    var score = 0;
+    var lives = 3;
+    var gameState = "ready";
+    var gameVisible = false;
+    var lastFrame = 0;
+    var lastSpawn = 0;
+    var gameFrame = 0;
+
+    function gamePointer(event) {
+      var rect = gameCanvas.getBoundingClientRect();
+      robot.tx = Math.max(18, Math.min(gameWidth - 18, (event.clientX - rect.left) * gameWidth / rect.width));
+      robot.ty = Math.max(55, Math.min(gameHeight - 20, (event.clientY - rect.top) * gameHeight / rect.height));
+    }
+
+    function resetGame() {
+      shots = [];
+      threats = [];
+      score = 0;
+      lives = 3;
+      lastSpawn = performance.now();
+      gameState = "running";
+    }
+
+    function fire() {
+      shots.push({ x: robot.x - 8, y: robot.y - 16 });
+      shots.push({ x: robot.x + 8, y: robot.y - 16 });
+    }
+
+    function spawnThreat(now) {
+      var name = threatNames[Math.floor(Math.random() * threatNames.length)];
+      threats.push({
+        x: 38 + Math.random() * (gameWidth - 76),
+        y: -30,
+        w: name === "IMPRÉVU" ? 66 : 56,
+        h: 42,
+        speed: 48 + Math.min(85, score / 18) + Math.random() * 25,
+        name: name
+      });
+      lastSpawn = now;
+    }
+
+    function overlap(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function hitRobot() {
+      lives = Math.max(0, lives - 1);
+      if (lives <= 0) gameState = "over";
+      return true;
+    }
+
+    function updateGame(delta, now) {
+      if (gameState !== "running") return;
+      var follow = reduceMotion ? 1 : Math.min(1, delta * 12);
+      robot.x += (robot.tx - robot.x) * follow;
+      robot.y += (robot.ty - robot.y) * follow;
+      shots.forEach(function (shot) { shot.y -= 340 * delta; });
+      threats.forEach(function (threat) { threat.y += threat.speed * delta; });
+      shots = shots.filter(function (shot) {
+        var hit = threats.find(function (threat) {
+          return overlap({ x: shot.x - 2, y: shot.y - 6, w: 4, h: 12 }, { x: threat.x - threat.w / 2, y: threat.y - threat.h / 2, w: threat.w, h: threat.h });
+        });
+        if (hit) {
+          threats.splice(threats.indexOf(hit), 1);
+          score += 100;
+          return false;
+        }
+        return shot.y > -10;
+      });
+      threats = threats.filter(function (threat) {
+        var box = { x: threat.x - threat.w / 2, y: threat.y - threat.h / 2, w: threat.w, h: threat.h };
+        if (overlap(box, { x: robot.x - 20, y: robot.y - 19, w: 40, h: 38 })) return !hitRobot(threat);
+        if (threat.y > gameHeight + 20) return !hitRobot(threat);
+        return true;
+      });
+      if (now - lastSpawn > Math.max(430, 1050 - score * .45)) spawnThreat(now);
+    }
+
+    function pixelText(text, x, y, size, color, align) {
+      gameContext.fillStyle = color;
+      gameContext.font = size + 'px "Geist Pixel", monospace';
+      gameContext.textAlign = align || "left";
+      gameContext.fillText(text, x, y);
+    }
+
+    function drawRobot() {
+      var x = Math.round(robot.x), y = Math.round(robot.y);
+      // Antenne et oreilles.
+      gameContext.fillStyle = "#68cc58";
+      gameContext.fillRect(x - 2, y - 24, 4, 5);
+      gameContext.fillRect(x - 4, y - 27, 8, 4);
+      gameContext.fillStyle = "#47739f";
+      gameContext.fillRect(x - 22, y - 14, 5, 12);
+      gameContext.fillRect(x + 17, y - 14, 5, 12);
+      // Tête, visage et yeux.
+      gameContext.fillStyle = "#1d70d9";
+      gameContext.fillRect(x - 18, y - 19, 36, 20);
+      gameContext.fillStyle = "#72b8ff";
+      gameContext.fillRect(x - 13, y - 14, 26, 10);
+      gameContext.fillStyle = "#071019";
+      gameContext.fillRect(x - 9, y - 11, 5, 5);
+      gameContext.fillRect(x + 4, y - 11, 5, 5);
+      gameContext.fillRect(x - 5, y - 2, 10, 3);
+      // Corps, cœur et bras-canons.
+      gameContext.fillStyle = "#175aa9";
+      gameContext.fillRect(x - 14, y + 2, 28, 17);
+      gameContext.fillRect(x - 22, y + 4, 8, 12);
+      gameContext.fillRect(x + 14, y + 4, 8, 12);
+      gameContext.fillStyle = "#68cc58";
+      gameContext.fillRect(x - 3, y + 7, 6, 6);
+      // Propulseurs.
+      gameContext.fillStyle = "#f0bf00";
+      gameContext.fillRect(x - 11, y + 19, 7, 7);
+      gameContext.fillRect(x + 4, y + 19, 7, 7);
+    }
+
+    function drawThreatIcon(threat, x, y) {
+      gameContext.strokeStyle = "#f7f8f8";
+      gameContext.fillStyle = "#f7f8f8";
+      gameContext.lineWidth = 2;
+      if (threat.name === "BUG") {
+        gameContext.fillRect(x - 5, y - 5, 10, 10);
+        gameContext.fillRect(x - 8, y - 2, 16, 4);
+        gameContext.fillRect(x - 4, y - 8, 3, 3);
+        gameContext.fillRect(x + 1, y - 8, 3, 3);
+      } else if (threat.name === "RETARD") {
+        gameContext.beginPath(); gameContext.arc(x, y - 1, 8, 0, Math.PI * 2); gameContext.stroke();
+        gameContext.beginPath(); gameContext.moveTo(x, y - 1); gameContext.lineTo(x, y - 6); gameContext.moveTo(x, y - 1); gameContext.lineTo(x + 5, y + 2); gameContext.stroke();
+      } else if (threat.name === "PANNE") {
+        gameContext.beginPath(); gameContext.moveTo(x + 2, y - 10); gameContext.lineTo(x - 6, y + 1); gameContext.lineTo(x, y + 1); gameContext.lineTo(x - 2, y + 10); gameContext.lineTo(x + 7, y - 3); gameContext.lineTo(x + 1, y - 3); gameContext.fill();
+      } else {
+        pixelText("!", x, y + 7, 20, "#f7f8f8", "center");
+      }
+    }
+
+    function drawGame(now) {
+      gameContext.fillStyle = "#0c1117";
+      gameContext.fillRect(0, 0, gameWidth, gameHeight);
+      for (var i = 0; i < 34; i += 1) {
+        var sy = (i * 67 + (reduceMotion ? 0 : now * (.012 + i % 3 * .005))) % gameHeight;
+        gameContext.fillStyle = i % 5 ? "#243140" : "#47739f";
+        gameContext.fillRect((i * 97) % gameWidth, sy, i % 4 ? 2 : 3, i % 4 ? 2 : 3);
+      }
+      gameContext.strokeStyle = "rgba(104,204,88,.18)";
+      gameContext.beginPath(); gameContext.moveTo(0, gameHeight - 28); gameContext.lineTo(gameWidth, gameHeight - 28); gameContext.stroke();
+      shots.forEach(function (shot) { gameContext.fillStyle = "#f0bf00"; gameContext.fillRect(Math.round(shot.x) - 2, Math.round(shot.y) - 7, 4, 12); });
+      threats.forEach(function (threat) {
+        var x = Math.round(threat.x - threat.w / 2), y = Math.round(threat.y - threat.h / 2);
+        gameContext.fillStyle = threat.name === "BUG" ? "#b93642" : threat.name === "RETARD" ? "#a15f29" : "#8f3949";
+        gameContext.fillRect(x, y, threat.w, threat.h);
+        gameContext.fillStyle = "#0c1117";
+        gameContext.fillRect(x + 3, y + 3, threat.w - 6, threat.h - 6);
+        drawThreatIcon(threat, threat.x, threat.y - 7);
+        pixelText(threat.name, threat.x, threat.y + 15, threat.name === "IMPRÉVU" ? 7 : 8, "#f7f8f8", "center");
+      });
+      drawRobot();
+      pixelText("SCORE  " + String(score).padStart(5, "0"), 16, 23, 12, "#f7f8f8");
+      pixelText("VIES  " + "■".repeat(lives), gameWidth - 16, 23, 12, lives === 1 ? "#d94a4a" : "#68cc58", "right");
+      if (gameState !== "running") {
+        gameContext.fillStyle = "rgba(5,8,11,.72)";
+        gameContext.fillRect(0, 0, gameWidth, gameHeight);
+        pixelText(gameState === "over" ? "GAME OVER" : "BUG BLASTER", gameWidth / 2, 125, 24, gameState === "over" ? "#d94a4a" : "#68cc58", "center");
+        pixelText(gameState === "over" ? "SCORE  " + score + " · CLIQUEZ POUR REJOUER" : "CLIQUEZ POUR DÉMARRER", gameWidth / 2, 155, 11, "#f7f8f8", "center");
+      }
+    }
+
+    function gameLoop(now) {
+      gameFrame = 0;
+      var delta = Math.min(.034, (now - lastFrame) / 1000 || 0);
+      lastFrame = now;
+      updateGame(delta, now);
+      drawGame(now);
+      if (gameVisible && !document.hidden) gameFrame = requestAnimationFrame(gameLoop);
+    }
+
+    function startGameLoop() {
+      if (!gameFrame && gameVisible && !document.hidden) {
+        lastFrame = performance.now();
+        gameFrame = requestAnimationFrame(gameLoop);
+      }
+    }
+
+    gameCanvas.addEventListener("pointermove", gamePointer);
+    gameCanvas.addEventListener("pointerdown", function (event) {
+      gamePointer(event);
+      if (gameState !== "running") resetGame(); else fire();
+      gameCanvas.focus();
+    });
+    gameCanvas.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.code !== "Space") return;
+      event.preventDefault();
+      if (gameState !== "running") resetGame(); else fire();
+    });
+    whenVisible([shmup], function () { gameVisible = true; startGameLoop(); }, { threshold: 0.05 });
+    drawGame(0);
+  }
+
   document.addEventListener("visibilitychange", function () {
     document.documentElement.classList.toggle("animations-paused", document.hidden);
     document.querySelectorAll(".tb-root").forEach(function (root) { root.classList.toggle("tb-paused", document.hidden); });
@@ -704,11 +912,13 @@
       particleAnimationFrame = 0;
     } else {
       startParticleField();
+      if (typeof startGameLoop === "function") startGameLoop();
     }
   });
 
   window.addEventListener("pagehide", function () {
     if (particleAnimationFrame) cancelAnimationFrame(particleAnimationFrame);
+    if (gameFrame) cancelAnimationFrame(gameFrame);
     timers.forEach(function (timer) {
       window.clearTimeout(timer);
       window.clearInterval(timer);
