@@ -923,7 +923,11 @@
       gameLegend.appendChild(item);
       drawThreatIcon(icon.getContext("2d"), type, 16, 16, .85);
     });
-    whenVisible([shmup], function () { gameVisible = true; startGameLoop(); }, { threshold: 0.05 });
+    whenVisible([shmup], function () {
+      gameVisible = true;
+      resetGame();
+      startGameLoop();
+    }, { threshold: 0.05 });
     drawGame(0);
   }
 
