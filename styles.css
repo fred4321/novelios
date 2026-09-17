@@ -900,7 +900,7 @@ NavigationContainer [data-framer-component-type=NavigationContainer]>*,
 }
 
 .framer-jMeke .framer-pjrpqb {
-  height: 410px;
+  height: 370px;
   overflow: var(--overflow-clip-fallback, clip);
   will-change: var(--framer-will-change-override, transform);
   z-index: 1;
@@ -919,7 +919,7 @@ NavigationContainer [data-framer-component-type=NavigationContainer]>*,
 }
 
 .framer-jMeke .framer-1wa60sg {
-  height: 112px;
+  height: 70px;
   overflow: var(--overflow-clip-fallback, clip);
   background-color: #1f1f1f;
   flex-flow: column;
