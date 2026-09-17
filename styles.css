@@ -4200,12 +4200,7 @@ html body {
   color: #fff;
   font-size: 13px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family:'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .ncq-dot {
@@ -4267,12 +4262,7 @@ html body {
   border-radius: 999px;
   font-variant-numeric: tabular-nums;
   width: max-content;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @keyframes ncq-slide {
@@ -4358,12 +4348,7 @@ html body {
   color: #fff;
   font-size: 13px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .ncq-dot {
@@ -4425,12 +4410,7 @@ html body {
   border-radius: 999px;
   font-variant-numeric: tabular-nums;
   width: max-content;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @keyframes ncq-slide {
@@ -4488,7 +4468,7 @@ html body {
   animation: ncq-slide .48s cubic-bezier(.22, 1, .36, 1) both;
 }
 
-.ncq-wrap &gt;
+.ncq-wrap >
 
 div {
   min-height: 0;
@@ -4518,12 +4498,7 @@ div {
   color: #fff;
   font-size: 13px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .ncq-dot {
@@ -4585,12 +4560,7 @@ div {
   border-radius: 999px;
   font-variant-numeric: tabular-nums;
   width: max-content;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @keyframes ncq-slide {
@@ -6104,12 +6074,7 @@ div {
   display: block;
   overflow: hidden;
   isolation: isolate;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums;
 }
@@ -6675,12 +6640,7 @@ div {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.55;
@@ -6689,8 +6649,8 @@ div {
   white-space: nowrap;
 }
 
-/* Slate only. This clock reports &quot;not yet&quot; — lights out has not happened — which is
-   exactly what slate means sitewide. Amber is reserved for &quot;working / votre décision&quot;;
+/* Slate only. This clock reports 'not yet' — lights out has not happened — which is
+   exactly what slate means sitewide. Amber is reserved for 'working / votre décision';
    pulsing it here would announce a job state the component knows nothing about. */
 .njcl-dot {
   flex: 0 0 auto;
@@ -6731,12 +6691,7 @@ div {
 }
 
 .nrs-root {
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .nrs-fixed {
@@ -6750,17 +6705,13 @@ div {
   transition: transform .43s ease-in;
 }
 
-.nrs-fixed[data-open=&quot;
-true&quot;
-
+.nrs-fixed[data-open='true'
 ] {
   transform: translateY(0);
   transition: transform .43s cubic-bezier(.22, 1, .36, 1);
 }
 
-.nrs-fixed[data-open=&quot;
-false&quot;
-
+.nrs-fixed[data-open='false'
 ] {
   pointer-events: none;
 }
@@ -6785,7 +6736,7 @@ false&quot;
 }
 
 /* Amber = working / votre décision. The strip only ever shows a run in progress,
-   so this dot is amber by meaning, not by taste. Lime would read as &quot;done&quot;. */
+   so this dot is amber by meaning, not by taste. Lime would read as 'done'. */
 .nrs-dot {
   position: relative;
   width: 6px;
@@ -6913,8 +6864,7 @@ false&quot;
 
 @media (prefers-reduced-motion: reduce) {
   .nrs-fixed,
-  .nrs-fixed[data-open=&quot;
-  true&quot;
+  .nrs-fixed[data-open='true'
 
   ] {
     transition: none;
@@ -6930,12 +6880,7 @@ false&quot;
 .nlr-root {
   position: relative;
   pointer-events: none;
-  font-family: &quot;
-  Inter&quot;
-  ,
-  system-ui,
-  -apple-system,
-  sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums;
 }
