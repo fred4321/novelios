@@ -1,0 +1,27 @@
+{
+    "name": "src",
+    "version": "1.0.0",
+    "description": "",
+    "main": "script.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fred4321/novelios.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/fred4321/novelios/issues"
+    },
+    "homepage": "https://github.com/fred4321/novelios#readme",
+    "devDependencies": {
+        "vite": "^8.3.0",
+        "vite-plugin-html": "^3.2.2"
+    }
+}
