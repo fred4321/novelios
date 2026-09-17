@@ -7906,9 +7906,34 @@ false&quot;
 
 .j01-shmup canvas:focus-visible { box-shadow: inset 0 0 0 2px #1d70d9 }
 
+.j01-shmup__legend {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  background: #090d12;
+}
+
+.j01-shmup__legend span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 4px;
+  color: #aeb6c2;
+  font-size: 7px;
+  letter-spacing: .05em;
+  border-right: 1px solid rgba(255, 255, 255, .06);
+}
+
+.j01-shmup__legend span:last-child { border-right: 0 }
+.j01-shmup__legend canvas { width: 24px; height: 24px; flex: 0 0 24px; aspect-ratio: 1; cursor: default }
+
 @media (max-width: 600px) {
   .j01-shmup { margin-bottom: 34px }
   .j01-shmup__bar div { align-items: flex-start; flex-direction: column; gap: 6px }
   .j01-shmup__bar small { display: none }
   .j01-shmup canvas { aspect-ratio: 4 / 2.2 }
+  .j01-shmup__legend { grid-template-columns: repeat(4, 1fr) }
+  .j01-shmup__legend span:nth-child(-n+4) { border-bottom: 1px solid rgba(255, 255, 255, .06) }
 }

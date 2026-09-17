@@ -705,7 +705,16 @@
     var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 40, h: 38 };
     var shots = [];
     var threats = [];
-    var threatNames = ["BUG", "RETARD", "PANNE", "IMPRÉVU"];
+    var threatTypes = [
+      { name: "BUG", color: "#ff4f64" },
+      { name: "RETARD", color: "#ffad32" },
+      { name: "PANNE", color: "#ffe14a" },
+      { name: "IMPRÉVU", color: "#b879ff" },
+      { name: "CONGÉS", color: "#45dbb2" },
+      { name: "TURNOVER", color: "#59a8ff" },
+      { name: "PLANTAGE", color: "#57d7ff" },
+      { name: "CRASH", color: "#ff704d" }
+    ];
     var score = 0;
     var lives = 3;
     var gameState = "ready";
@@ -735,14 +744,15 @@
     }
 
     function spawnThreat(now) {
-      var name = threatNames[Math.floor(Math.random() * threatNames.length)];
+      var type = threatTypes[Math.floor(Math.random() * threatTypes.length)];
       threats.push({
-        x: 38 + Math.random() * (gameWidth - 76),
+        x: 28 + Math.random() * (gameWidth - 56),
         y: -30,
-        w: name === "IMPRÉVU" ? 66 : 56,
-        h: 42,
+        w: 38,
+        h: 38,
         speed: 48 + Math.min(85, score / 18) + Math.random() * 25,
-        name: name
+        name: type.name,
+        color: type.color
       });
       lastSpawn = now;
     }
@@ -822,23 +832,33 @@
       gameContext.fillRect(x + 4, y + 19, 7, 7);
     }
 
-    function drawThreatIcon(threat, x, y) {
-      gameContext.strokeStyle = "#f7f8f8";
-      gameContext.fillStyle = "#f7f8f8";
-      gameContext.lineWidth = 2;
+    function drawThreatIcon(context, threat, x, y, scale) {
+      function rect(rx, ry, rw, rh) { context.fillRect(x + rx * scale, y + ry * scale, rw * scale, rh * scale); }
+      context.save();
+      context.fillStyle = threat.color;
+      context.strokeStyle = threat.color;
+      context.lineWidth = 2 * scale;
+      context.shadowColor = threat.color;
+      context.shadowBlur = 7 * scale;
       if (threat.name === "BUG") {
-        gameContext.fillRect(x - 5, y - 5, 10, 10);
-        gameContext.fillRect(x - 8, y - 2, 16, 4);
-        gameContext.fillRect(x - 4, y - 8, 3, 3);
-        gameContext.fillRect(x + 1, y - 8, 3, 3);
+        rect(-5, -6, 10, 13); rect(-9, -3, 18, 3); rect(-8, 4, 5, 3); rect(3, 4, 5, 3); rect(-5, -10, 3, 4); rect(2, -10, 3, 4);
       } else if (threat.name === "RETARD") {
-        gameContext.beginPath(); gameContext.arc(x, y - 1, 8, 0, Math.PI * 2); gameContext.stroke();
-        gameContext.beginPath(); gameContext.moveTo(x, y - 1); gameContext.lineTo(x, y - 6); gameContext.moveTo(x, y - 1); gameContext.lineTo(x + 5, y + 2); gameContext.stroke();
+        context.beginPath(); context.arc(x, y, 9 * scale, 0, Math.PI * 2); context.stroke();
+        context.beginPath(); context.moveTo(x, y); context.lineTo(x, y - 6 * scale); context.lineTo(x + 5 * scale, y + 3 * scale); context.stroke(); rect(-3, -13, 6, 3);
       } else if (threat.name === "PANNE") {
-        gameContext.beginPath(); gameContext.moveTo(x + 2, y - 10); gameContext.lineTo(x - 6, y + 1); gameContext.lineTo(x, y + 1); gameContext.lineTo(x - 2, y + 10); gameContext.lineTo(x + 7, y - 3); gameContext.lineTo(x + 1, y - 3); gameContext.fill();
+        context.beginPath(); context.moveTo(x + 2 * scale, y - 12 * scale); context.lineTo(x - 7 * scale, y + scale); context.lineTo(x - scale, y + scale); context.lineTo(x - 4 * scale, y + 12 * scale); context.lineTo(x + 8 * scale, y - 3 * scale); context.lineTo(x + scale, y - 3 * scale); context.fill();
+      } else if (threat.name === "IMPRÉVU") {
+        context.beginPath(); context.moveTo(x, y - 12 * scale); context.lineTo(x + 11 * scale, y + 9 * scale); context.lineTo(x - 11 * scale, y + 9 * scale); context.closePath(); context.stroke(); rect(-1.5, -5, 3, 8); rect(-1.5, 5, 3, 3);
+      } else if (threat.name === "CONGÉS") {
+        context.beginPath(); context.arc(x + 6 * scale, y - 6 * scale, 5 * scale, 0, Math.PI * 2); context.fill(); rect(-8, 4, 16, 3); rect(-1, -7, 3, 12); rect(-8, -6, 7, 3); rect(-6, -9, 5, 3); rect(2, -2, 7, 3);
+      } else if (threat.name === "TURNOVER") {
+        context.beginPath(); context.arc(x, y - 5 * scale, 4 * scale, 0, Math.PI * 2); context.fill(); rect(-7, 1, 14, 7); rect(-12, 8, 7, 3); rect(5, 8, 7, 3); rect(-12, 5, 3, 6); rect(9, 5, 3, 6);
+      } else if (threat.name === "PLANTAGE") {
+        context.strokeRect(x - 10 * scale, y - 8 * scale, 20 * scale, 15 * scale); rect(-3, 7, 6, 4); rect(-7, 11, 14, 2); context.beginPath(); context.moveTo(x - 5 * scale, y - 4 * scale); context.lineTo(x + 5 * scale, y + 4 * scale); context.moveTo(x + 5 * scale, y - 4 * scale); context.lineTo(x - 5 * scale, y + 4 * scale); context.stroke();
       } else {
-        pixelText("!", x, y + 7, 20, "#f7f8f8", "center");
+        rect(-3, -12, 6, 7); rect(-3, 5, 6, 7); rect(-12, -3, 7, 6); rect(5, -3, 7, 6); rect(-8, -8, 5, 5); rect(3, 3, 5, 5); rect(3, -8, 5, 5); rect(-8, 3, 5, 5); rect(-3, -3, 6, 6);
       }
+      context.restore();
     }
 
     function drawGame(now) {
@@ -853,13 +873,7 @@
       gameContext.beginPath(); gameContext.moveTo(0, gameHeight - 28); gameContext.lineTo(gameWidth, gameHeight - 28); gameContext.stroke();
       shots.forEach(function (shot) { gameContext.fillStyle = "#f0bf00"; gameContext.fillRect(Math.round(shot.x) - 2, Math.round(shot.y) - 7, 4, 12); });
       threats.forEach(function (threat) {
-        var x = Math.round(threat.x - threat.w / 2), y = Math.round(threat.y - threat.h / 2);
-        gameContext.fillStyle = threat.name === "BUG" ? "#b93642" : threat.name === "RETARD" ? "#a15f29" : "#8f3949";
-        gameContext.fillRect(x, y, threat.w, threat.h);
-        gameContext.fillStyle = "#0c1117";
-        gameContext.fillRect(x + 3, y + 3, threat.w - 6, threat.h - 6);
-        drawThreatIcon(threat, threat.x, threat.y - 7);
-        pixelText(threat.name, threat.x, threat.y + 15, threat.name === "IMPRÉVU" ? 7 : 8, "#f7f8f8", "center");
+        drawThreatIcon(gameContext, threat, Math.round(threat.x), Math.round(threat.y), 1.15);
       });
       drawRobot();
       pixelText("SCORE  " + String(score).padStart(5, "0"), 16, 23, 12, "#f7f8f8");
@@ -898,6 +912,16 @@
       if (event.key !== "Enter" && event.code !== "Space") return;
       event.preventDefault();
       if (gameState !== "running") resetGame(); else fire();
+    });
+    var gameLegend = shmup.querySelector("[data-shmup-legend]");
+    threatTypes.forEach(function (type) {
+      var item = document.createElement("span");
+      var icon = document.createElement("canvas");
+      icon.width = 32; icon.height = 32;
+      item.appendChild(icon);
+      item.appendChild(document.createTextNode(type.name));
+      gameLegend.appendChild(item);
+      drawThreatIcon(icon.getContext("2d"), type, 16, 16, .85);
     });
     whenVisible([shmup], function () { gameVisible = true; startGameLoop(); }, { threshold: 0.05 });
     drawGame(0);
