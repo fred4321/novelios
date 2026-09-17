@@ -37,6 +37,45 @@
     });
   });
 
+  // Menu mobile : l'export statique contient les deux styles d'état,
+  // mais ne fournit pas l'interaction Framer qui les faisait basculer.
+  var mobileNav = document.querySelector(".framer-MHHwW.framer-v-vjcvp0");
+  if (mobileNav) {
+    var mobileMenuButton = mobileNav.querySelector(".framer-yhc8gt");
+    var mobileMenuParts = [
+      mobileNav.querySelector(".framer-wmv9a5"),
+      mobileNav.querySelector(".framer-1bx7p0f")
+    ].filter(Boolean);
+
+    function setMobileMenu(open, returnFocus) {
+      mobileNav.classList.toggle("framer-v-vjcvp0", !open);
+      mobileNav.classList.toggle("framer-v-1l1vqpb", open);
+      mobileNav.classList.toggle("is-menu-open", open);
+      mobileMenuButton.setAttribute("aria-expanded", String(open));
+      mobileMenuButton.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+      mobileMenuParts.forEach(function (part) { part.inert = !open; });
+      if (!open && returnFocus) mobileMenuButton.focus();
+    }
+
+    setMobileMenu(false, false);
+    mobileMenuButton.addEventListener("click", function () {
+      setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") !== "true", false);
+    });
+    mobileNav.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener("click", function () { setMobileMenu(false, false); });
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && mobileMenuButton.getAttribute("aria-expanded") === "true") {
+        setMobileMenu(false, true);
+      }
+    });
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 810 && mobileMenuButton.getAttribute("aria-expanded") === "true") {
+        setMobileMenu(false, false);
+      }
+    });
+  }
+
   // Entrées éditoriales au défilement, proches des transitions Framer.
   var revealSelector = [
     "section [data-framer-name='Marker']",

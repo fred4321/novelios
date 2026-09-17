@@ -1606,7 +1606,8 @@ NavigationContainer [data-framer-component-type=NavigationContainer]>*,
   gap: 0;
   width: 390px;
   height: 66px;
-  padding: 18px 20px
+  padding: 18px 20px;
+  transition: height 280ms cubic-bezier(.22, 1, .36, 1), min-height 280ms cubic-bezier(.22, 1, .36, 1)
 }
 
 .framer-MHHwW.framer-v-vjcvp0 .framer-vlmduz,
@@ -1659,7 +1660,27 @@ NavigationContainer [data-framer-component-type=NavigationContainer]>*,
   width: 390px;
   min-height: 340px;
   padding: 18px 20px;
-  overflow: auto
+  overflow: auto;
+  transition: height 280ms cubic-bezier(.22, 1, .36, 1), min-height 280ms cubic-bezier(.22, 1, .36, 1)
+}
+
+.framer-MHHwW .framer-yhc8gt {
+  color: #f7f8f8;
+  border: 0;
+  background: transparent
+}
+
+.framer-MHHwW .framer-yhc8gt:focus-visible {
+  outline: 2px solid #f7f8f8;
+  outline-offset: 2px
+}
+
+.framer-MHHwW .framer-1b95s2e {
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1)
+}
+
+.framer-MHHwW.is-menu-open .framer-1b95s2e {
+  transform: rotate(90deg)
 }
 
 body {
