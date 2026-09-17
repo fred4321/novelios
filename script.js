@@ -877,7 +877,7 @@
       });
       drawRobot();
       pixelText("SCORE  " + String(score).padStart(5, "0"), 16, 23, 12, "#f7f8f8");
-      pixelText("VIES  " + "■".repeat(lives), gameWidth - 16, 23, 12, lives === 1 ? "#d94a4a" : "#68cc58", "right");
+      pixelText("CRÉDITS  " + "■".repeat(lives), gameWidth - 16, 23, 12, lives === 1 ? "#d94a4a" : "#68cc58", "right");
       if (gameState !== "running") {
         gameContext.fillStyle = "rgba(5,8,11,.72)";
         gameContext.fillRect(0, 0, gameWidth, gameHeight);

@@ -7921,7 +7921,8 @@ false&quot;
   min-width: 0;
   padding: 8px 4px;
   color: #aeb6c2;
-  font-size: 7px;
+  font-size: 10px;
+  font-weight: bold;
   letter-spacing: .05em;
   border-right: 1px solid rgba(255, 255, 255, .06);
 }
