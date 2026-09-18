@@ -7978,7 +7978,7 @@ div {
 
 .j01-shmup__legends {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 5fr 3fr;
   border-top: 1px solid rgba(255, 255, 255, .08);
   background: #090d12;
 }
@@ -7991,7 +7991,7 @@ div {
   grid-template-columns: repeat(8, minmax(0, 1fr));
 }
 
-.j01-shmup__legend--bonus { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+.j01-shmup__legend--bonus { grid-template-columns: repeat(4, minmax(0, 1fr)) }
 
 .j01-shmup__legend span {
   display: flex;

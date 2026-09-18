@@ -721,8 +721,8 @@
     var deploymentGoal = 7000;
     var phases = ["Cadrage", "Préparation", "Déploiement", "Mise en service"];
     var bonusTypes = [
-      { name: "ANTICIPATION", color: "#57d7ff", symbol: "A", description: "obstacles ralentis" },
-      { name: "COORDINATION", color: "#68cc58", symbol: "C", description: "tirs renforcés" },
+      { name: "ANTICIPATION", color: "#57d7ff", symbol: "A", description: "Ralentissement" },
+      { name: "COORDINATION", color: "#68cc58", symbol: "C", description: "Renforcement" },
       { name: "ARBITRAGE", color: "#f0bf00", symbol: "X", description: "écran dégagé" },
       { name: "AVANCE", color: "#b879ff", symbol: "+", description: "bouclier activé" }
     ];
@@ -854,7 +854,8 @@
         threats = [];
       }
       if (bonus.name === "AVANCE") shieldUntil = now + 6000;
-      bonusMessage = bonus.name + " · " + bonus.description;
+      //bonusMessage = bonus.name + " · " + bonus.description;
+      bonusMessage = bonus.name
       bonusMessageUntil = now + 1800;
       if (score >= deploymentGoal) endGame("won");
     }
@@ -1072,7 +1073,8 @@
       var icon = document.createElement("canvas");
       icon.width = 32; icon.height = 32;
       item.appendChild(icon);
-      item.appendChild(document.createTextNode(type.name + " · " + type.description));
+      //item.appendChild(document.createTextNode(type.name + " · " + type.description));
+      item.appendChild(document.createTextNode(type.name))
       bonusLegend.appendChild(item);
       drawBonus(icon.getContext("2d"), type, 16, 16, .78);
     });
