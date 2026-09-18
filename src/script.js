@@ -820,7 +820,7 @@
       var won = state === "won";
       resultPanel.classList.toggle("is-won", won);
       resultPanel.classList.toggle("is-lost", !won);
-      resultTitle.textContent = won ? "Mise en production réussie !" : "Les imprévus ont pris le dessus…";
+      resultTitle.textContent = won ? "Mise en production réussie !" : "Les obstacles ont pris le dessus…";
       resultCopy.textContent = won ? "Votre projet est en service." : "Nouvelle tentative ?";
       projectLink.hidden = !won;
       retryButton.hidden = won;
@@ -1021,7 +1021,7 @@
         gameContext.fillRect(0, 0, gameWidth, gameHeight);
         var won = gameState === "won";
         var lost = gameState === "over";
-        pixelText(won ? "MISE EN PRODUCTION RÉUSSIE !" : lost ? "LES IMPRÉVUS ONT PRIS LE DESSUS…" : "BUG BLASTER", gameWidth / 2, 125, won || lost ? 18 : 24, won ? "#68cc58" : lost ? "#d94a4a" : "#68cc58", "center");
+        pixelText(won ? "MISE EN PRODUCTION RÉUSSIE !" : lost ? "LES OBSTACLES ONT PRIS LE DESSUS…" : "BUG BLASTER", gameWidth / 2, 125, won || lost ? 18 : 24, won ? "#68cc58" : lost ? "#d94a4a" : "#68cc58", "center");
         pixelText(won ? "VOTRE PROJET EST EN SERVICE" : lost ? "NOUVELLE TENTATIVE ?" : "CLIQUEZ POUR DÉMARRER", gameWidth / 2, 155, 15, "#f7f8f8", "center");
       }
     }
