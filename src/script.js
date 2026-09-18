@@ -736,6 +736,9 @@
     var shieldUntil = 0;
     var bonusMessageUntil = 0;
     var bonusMessage = "";
+    var firing = false;
+    var lastShotAt = 0;
+    var fireInterval = 140;
     var gameFrame = 0;
     var progressFill = shmup.querySelector("[data-shmup-progress]");
     var progressSteps = Array.from(shmup.querySelectorAll("[data-shmup-steps] li"));
@@ -765,6 +768,8 @@
       wideUntil = 0;
       shieldUntil = 0;
       bonusMessageUntil = 0;
+      firing = false;
+      lastShotAt = 0;
       gameState = "running";
       resultPanel.hidden = true;
       gameOverPanel.hidden = true;
@@ -817,6 +822,7 @@
     }
 
     function endGame(state) {
+      firing = false;
       gameState = state;
       var won = state === "won";
       resultPanel.hidden = !won;
@@ -862,6 +868,10 @@
 
     function updateGame(delta, now) {
       if (gameState !== "running") return;
+      if (firing && now - lastShotAt >= fireInterval) {
+        fire();
+        lastShotAt = now;
+      }
       var follow = reduceMotion ? 1 : Math.min(1, delta * 12);
       robot.x += (robot.tx - robot.x) * follow;
       robot.y += (robot.ty - robot.y) * follow;
@@ -1079,10 +1089,23 @@
 
     gameCanvas.addEventListener("pointermove", gamePointer);
     gameCanvas.addEventListener("pointerdown", function (event) {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
       gamePointer(event);
-      if (gameState === "ready") resetGame(); else if (gameState === "running") fire();
+      if (gameState === "ready") resetGame();
+      if (gameState === "running") {
+        firing = true;
+        fire();
+        lastShotAt = performance.now();
+        gameCanvas.setPointerCapture(event.pointerId);
+      }
       gameCanvas.focus();
     });
+    function stopFiring() { firing = false; }
+    gameCanvas.addEventListener("pointerup", stopFiring);
+    gameCanvas.addEventListener("pointercancel", stopFiring);
+    gameCanvas.addEventListener("lostpointercapture", stopFiring);
+    window.addEventListener("blur", stopFiring);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stopFiring(); });
     gameCanvas.addEventListener("keydown", function (event) {
       if (event.key !== "Enter" && event.code !== "Space") return;
       event.preventDefault();
