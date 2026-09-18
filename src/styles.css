@@ -7882,6 +7882,8 @@ div {
 .j01-shmup__progress li.is-active span { color: #68cc58 }
 .j01-shmup__progress li.is-complete { color: #68cc58 }
 
+.j01-shmup__arena { position: relative }
+
 .j01-shmup canvas {
   display: block;
   width: 100%;
@@ -7894,6 +7896,39 @@ div {
 }
 
 .j01-shmup canvas:focus-visible { box-shadow: inset 0 0 0 2px #1d70d9 }
+
+.j01-shmup__game-over {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(5, 8, 11, .84);
+  color: #f7f8f8;
+  text-align: center;
+}
+
+.j01-shmup__game-over[hidden] { display: none }
+.j01-shmup__game-over strong { color: #ff7373; font-size: 19px }
+.j01-shmup__game-over span { color: #c3cad3; font-size: 13px }
+.j01-shmup__game-over button {
+  margin-top: 8px;
+  border: 1px solid #ff7373;
+  padding: 10px 15px;
+  color: #fff;
+  background: #d94a4a;
+  box-shadow: 0 0 18px rgba(217, 74, 74, .25);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.j01-shmup__game-over button:hover { background: #ed5d5d }
+.j01-shmup__game-over button:focus-visible { outline: 2px solid #fff; outline-offset: 3px }
 
 .j01-shmup__status {
   position: absolute;

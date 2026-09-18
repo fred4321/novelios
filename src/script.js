@@ -744,6 +744,7 @@
     var resultTitle = shmup.querySelector("[data-shmup-result-title]");
     var resultCopy = shmup.querySelector("[data-shmup-result-copy]");
     var projectLink = shmup.querySelector("[data-shmup-project-link]");
+    var gameOverPanel = shmup.querySelector("[data-shmup-game-over]");
     var retryButton = shmup.querySelector("[data-shmup-retry]");
 
     function gamePointer(event) {
@@ -766,6 +767,7 @@
       bonusMessageUntil = 0;
       gameState = "running";
       resultPanel.hidden = true;
+      gameOverPanel.hidden = true;
       resultPanel.classList.remove("is-won", "is-lost");
       updateProgress(lastSpawn);
     }
@@ -816,16 +818,17 @@
 
     function endGame(state) {
       gameState = state;
-      resultPanel.hidden = false;
       var won = state === "won";
+      resultPanel.hidden = !won;
+      gameOverPanel.hidden = won;
       resultPanel.classList.toggle("is-won", won);
       resultPanel.classList.toggle("is-lost", !won);
       resultTitle.textContent = won ? "Mise en production réussie !" : "Les obstacles ont pris le dessus…";
       resultCopy.textContent = won ? "Votre projet est en service." : "Nouvelle tentative ?";
       projectLink.hidden = !won;
-      retryButton.hidden = won;
       gameStatus.textContent = won ? "PROJET LIVRÉ · MISE EN SERVICE TERMINÉE" : "PROJET INTERROMPU · RETENTEZ VOTRE CHANCE";
       gameStatus.classList.toggle("is-bonus", won);
+      if (!won) retryButton.focus({ preventScroll: true });
     }
 
     function overlap(a, b) {
@@ -1045,13 +1048,13 @@
     gameCanvas.addEventListener("pointermove", gamePointer);
     gameCanvas.addEventListener("pointerdown", function (event) {
       gamePointer(event);
-      if (gameState === "ready" || gameState === "over") resetGame(); else if (gameState === "running") fire();
+      if (gameState === "ready") resetGame(); else if (gameState === "running") fire();
       gameCanvas.focus();
     });
     gameCanvas.addEventListener("keydown", function (event) {
       if (event.key !== "Enter" && event.code !== "Space") return;
       event.preventDefault();
-      if (gameState === "ready" || gameState === "over") resetGame(); else if (gameState === "running") fire();
+      if (gameState === "ready") resetGame(); else if (gameState === "running") fire();
     });
     var gameLegend = shmup.querySelector("[data-shmup-legend]");
     threatTypes.forEach(function (type) {

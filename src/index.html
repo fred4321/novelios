@@ -213,13 +213,19 @@
                   <li><span>04</span>Mise en service</li>
                 </ol>
               </div>
-              <canvas width="800" height="300" tabindex="0" role="img" aria-label="Bug Blaster : déplacez le robot avec la souris et cliquez pour éliminer les obstacles du projet."></canvas>
+              <div class="j01-shmup__arena">
+                <canvas width="800" height="300" tabindex="0" role="img" aria-label="Bug Blaster : déplacez le robot avec la souris et cliquez pour éliminer les obstacles du projet."></canvas>
+                <div class="j01-shmup__game-over" data-shmup-game-over hidden aria-live="assertive">
+                  <strong>Les obstacles ont pris le dessus…</strong>
+                  <span>Votre projet est interrompu.</span>
+                  <button type="button" data-shmup-retry>Nouvelle tentative</button>
+                </div>
+              </div>
               <p class="j01-shmup__status" data-shmup-status aria-live="polite">Phase 1/4 · Cadrage</p>
               <div class="j01-shmup__result" data-shmup-result hidden aria-live="assertive">
                 <strong data-shmup-result-title></strong>
                 <span data-shmup-result-copy></span>
                 <a href="#contact" data-shmup-project-link style="font-size: 20px; font-weight:bold">Parlons de votre projet</a>
-                <button type="button" data-shmup-retry>Nouvelle tentative</button>
               </div>
               <div class="j01-shmup__legends">
                 <div><small>OBSTACLES</small><div class="j01-shmup__legend" data-shmup-legend aria-label="Légende des obstacles"></div></div>
