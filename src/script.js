@@ -702,14 +702,15 @@
     var gameContext = gameCanvas.getContext("2d");
     var gameWidth = gameCanvas.width;
     var gameHeight = gameCanvas.height;
-    var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 40, h: 38 };
+    var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 34, h: 32 };
     var shots = [];
     var threats = [];
+    var bonuses = [];
     var threatTypes = [
       { name: "BUG", color: "#ff4f64" },
       { name: "RETARD", color: "#ffad32" },
       { name: "PANNE", color: "#ffe14a" },
-      { name: "IMPRÉVU", color: "#b879ff" },
+      { name: "DÉPASSEMENT", color: "#b879ff" },
       { name: "CONGÉS", color: "#45dbb2" },
       { name: "TURNOVER", color: "#59a8ff" },
       { name: "PLANTAGE", color: "#57d7ff" },
@@ -717,11 +718,33 @@
     ];
     var score = 0;
     var lives = 3;
+    var deploymentGoal = 10000;
+    var phases = ["Cadrage", "Préparation", "Déploiement", "Mise en service"];
+    var bonusTypes = [
+      { name: "ANTICIPATION", color: "#57d7ff", symbol: "A", description: "obstacles ralentis" },
+      { name: "COORDINATION", color: "#68cc58", symbol: "C", description: "tirs renforcés" },
+      { name: "ARBITRAGE", color: "#f0bf00", symbol: "X", description: "écran dégagé" },
+      { name: "AVANCE", color: "#b879ff", symbol: "+", description: "bouclier activé" }
+    ];
     var gameState = "ready";
     var gameVisible = false;
     var lastFrame = 0;
     var lastSpawn = 0;
+    var nextBonusAt = 0;
+    var slowUntil = 0;
+    var wideUntil = 0;
+    var shieldUntil = 0;
+    var bonusMessageUntil = 0;
+    var bonusMessage = "";
     var gameFrame = 0;
+    var progressFill = shmup.querySelector("[data-shmup-progress]");
+    var progressSteps = Array.from(shmup.querySelectorAll("[data-shmup-steps] li"));
+    var gameStatus = shmup.querySelector("[data-shmup-status]");
+    var resultPanel = shmup.querySelector("[data-shmup-result]");
+    var resultTitle = shmup.querySelector("[data-shmup-result-title]");
+    var resultCopy = shmup.querySelector("[data-shmup-result-copy]");
+    var projectLink = shmup.querySelector("[data-shmup-project-link]");
+    var retryButton = shmup.querySelector("[data-shmup-retry]");
 
     function gamePointer(event) {
       var rect = gameCanvas.getBoundingClientRect();
@@ -732,15 +755,25 @@
     function resetGame() {
       shots = [];
       threats = [];
+      bonuses = [];
       score = 0;
       lives = 3;
       lastSpawn = performance.now();
+      nextBonusAt = lastSpawn + 5000;
+      slowUntil = 0;
+      wideUntil = 0;
+      shieldUntil = 0;
+      bonusMessageUntil = 0;
       gameState = "running";
+      resultPanel.hidden = true;
+      resultPanel.classList.remove("is-won", "is-lost");
+      updateProgress(lastSpawn);
     }
 
     function fire() {
-      shots.push({ x: robot.x - 8, y: robot.y - 16 });
-      shots.push({ x: robot.x + 8, y: robot.y - 16 });
+      var reinforced = performance.now() < wideUntil;
+      shots.push({ x: robot.x - (reinforced ? 13 : 7), y: robot.y - 15, w: reinforced ? 9 : 4 });
+      shots.push({ x: robot.x + (reinforced ? 13 : 7), y: robot.y - 15, w: reinforced ? 9 : 4 });
     }
 
     function spawnThreat(now) {
@@ -750,21 +783,77 @@
         y: -30,
         w: 38,
         h: 38,
-        speed: 48 + Math.min(85, score / 18) + Math.random() * 25,
+        speed: 44 + Math.min(42, score / 42) + Math.random() * 20,
         name: type.name,
         color: type.color
       });
       lastSpawn = now;
     }
 
+    function spawnBonus(now) {
+      var type = bonusTypes[Math.floor(Math.random() * bonusTypes.length)];
+      bonuses.push({ x: 36 + Math.random() * (gameWidth - 72), y: -24, w: 30, h: 30, speed: 50, name: type.name, color: type.color, symbol: type.symbol, description: type.description });
+      nextBonusAt = now + 6500 + Math.random() * 3500;
+    }
+
+    function updateProgress(now) {
+      var progress = Math.min(1, score / deploymentGoal);
+      var phaseIndex = Math.min(3, Math.floor(progress * 4));
+      progressFill.style.transform = "scaleX(" + progress.toFixed(3) + ")";
+      progressSteps.forEach(function (step, index) {
+        step.classList.toggle("is-complete", index < phaseIndex || progress === 1);
+        step.classList.toggle("is-active", index === phaseIndex && progress < 1);
+      });
+      if (gameState === "running") {
+        var activeEffects = [];
+        if (now < slowUntil) activeEffects.push("ANTICIPATION");
+        if (now < wideUntil) activeEffects.push("COORDINATION");
+        if (now < shieldUntil) activeEffects.push("AVANCE");
+        gameStatus.classList.toggle("is-bonus", now < bonusMessageUntil || activeEffects.length > 0);
+        gameStatus.textContent = now < bonusMessageUntil ? bonusMessage : "Phase " + (phaseIndex + 1) + "/4 · " + phases[phaseIndex] + (activeEffects.length ? " · " + activeEffects.join(" + ") : "");
+      }
+    }
+
+    function endGame(state) {
+      gameState = state;
+      resultPanel.hidden = false;
+      var won = state === "won";
+      resultPanel.classList.toggle("is-won", won);
+      resultPanel.classList.toggle("is-lost", !won);
+      resultTitle.textContent = won ? "Mise en production réussie !" : "Les imprévus ont pris le dessus…";
+      resultCopy.textContent = won ? "Votre projet est en service." : "Nouvelle tentative ?";
+      projectLink.hidden = !won;
+      retryButton.hidden = won;
+      gameStatus.textContent = won ? "PROJET LIVRÉ · MISE EN SERVICE TERMINÉE" : "PROJET INTERROMPU · RETENTEZ VOTRE CHANCE";
+      gameStatus.classList.toggle("is-bonus", won);
+    }
+
     function overlap(a, b) {
       return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     }
 
-    function hitRobot() {
+    function hitRobot(now) {
+      if (now < shieldUntil) {
+        bonusMessage = "AVANCE · obstacle absorbé par le bouclier";
+        bonusMessageUntil = now + 1200;
+        return true;
+      }
       lives = Math.max(0, lives - 1);
-      if (lives <= 0) gameState = "over";
+      if (lives <= 0) endGame("over");
       return true;
+    }
+
+    function collectBonus(bonus, now) {
+      if (bonus.name === "ANTICIPATION") slowUntil = now + 6000;
+      if (bonus.name === "COORDINATION") wideUntil = now + 7000;
+      if (bonus.name === "ARBITRAGE") {
+        score = Math.min(deploymentGoal, score + threats.length * 100);
+        threats = [];
+      }
+      if (bonus.name === "AVANCE") shieldUntil = now + 6000;
+      bonusMessage = bonus.name + " · " + bonus.description;
+      bonusMessageUntil = now + 1800;
+      if (score >= deploymentGoal) endGame("won");
     }
 
     function updateGame(delta, now) {
@@ -773,25 +862,37 @@
       robot.x += (robot.tx - robot.x) * follow;
       robot.y += (robot.ty - robot.y) * follow;
       shots.forEach(function (shot) { shot.y -= 340 * delta; });
-      threats.forEach(function (threat) { threat.y += threat.speed * delta; });
+      threats.forEach(function (threat) { threat.y += threat.speed * (now < slowUntil ? .52 : 1) * delta; });
+      bonuses.forEach(function (bonus) { bonus.y += bonus.speed * delta; });
       shots = shots.filter(function (shot) {
         var hit = threats.find(function (threat) {
-          return overlap({ x: shot.x - 2, y: shot.y - 6, w: 4, h: 12 }, { x: threat.x - threat.w / 2, y: threat.y - threat.h / 2, w: threat.w, h: threat.h });
+          return overlap({ x: shot.x - shot.w / 2, y: shot.y - 6, w: shot.w, h: 12 }, { x: threat.x - threat.w / 2, y: threat.y - threat.h / 2, w: threat.w, h: threat.h });
         });
         if (hit) {
           threats.splice(threats.indexOf(hit), 1);
           score += 100;
+          if (score >= deploymentGoal) endGame("won");
           return false;
         }
         return shot.y > -10;
       });
       threats = threats.filter(function (threat) {
         var box = { x: threat.x - threat.w / 2, y: threat.y - threat.h / 2, w: threat.w, h: threat.h };
-        if (overlap(box, { x: robot.x - 20, y: robot.y - 19, w: 40, h: 38 })) return !hitRobot(threat);
-        if (threat.y > gameHeight + 20) return !hitRobot(threat);
+        if (overlap(box, { x: robot.x - robot.w / 2, y: robot.y - robot.h / 2, w: robot.w, h: robot.h })) return !hitRobot(now);
+        if (threat.y > gameHeight + 20) return !hitRobot(now);
         return true;
       });
-      if (now - lastSpawn > Math.max(430, 1050 - score * .45)) spawnThreat(now);
+      bonuses = bonuses.filter(function (bonus) {
+        var box = { x: bonus.x - bonus.w / 2, y: bonus.y - bonus.h / 2, w: bonus.w, h: bonus.h };
+        if (overlap(box, { x: robot.x - robot.w / 2, y: robot.y - robot.h / 2, w: robot.w, h: robot.h })) {
+          collectBonus(bonus, now);
+          return false;
+        }
+        return bonus.y < gameHeight + 24;
+      });
+      if (gameState === "running" && now - lastSpawn > Math.max(610, 1120 - score * .18)) spawnThreat(now);
+      if (gameState === "running" && now >= nextBonusAt && bonuses.length === 0) spawnBonus(now);
+      updateProgress(now);
     }
 
     function pixelText(text, x, y, size, color, align) {
@@ -803,6 +904,10 @@
 
     function drawRobot() {
       var x = Math.round(robot.x), y = Math.round(robot.y);
+      gameContext.save();
+      gameContext.translate(x, y);
+      gameContext.scale(.84, .84);
+      x = 0; y = 0;
       // Antenne et oreilles.
       gameContext.fillStyle = "#68cc58";
       gameContext.fillRect(x - 2, y - 24, 4, 5);
@@ -830,6 +935,38 @@
       gameContext.fillStyle = "#f0bf00";
       gameContext.fillRect(x - 11, y + 19, 7, 7);
       gameContext.fillRect(x + 4, y + 19, 7, 7);
+      gameContext.restore();
+      if (performance.now() < shieldUntil) {
+        gameContext.save();
+        gameContext.strokeStyle = "#b879ff";
+        gameContext.lineWidth = 3;
+        gameContext.shadowColor = "#b879ff";
+        gameContext.shadowBlur = 12;
+        gameContext.beginPath();
+        gameContext.arc(Math.round(robot.x), Math.round(robot.y), 27, 0, Math.PI * 2);
+        gameContext.stroke();
+        gameContext.restore();
+      }
+    }
+
+    function drawBonus(context, bonus, x, y, scale) {
+      context.save();
+      context.translate(x, y);
+      context.rotate(Math.PI / 4);
+      context.fillStyle = "rgba(7, 16, 25, .92)";
+      context.strokeStyle = bonus.color;
+      context.lineWidth = 3 * scale;
+      context.shadowColor = bonus.color;
+      context.shadowBlur = 12 * scale;
+      context.fillRect(-10 * scale, -10 * scale, 20 * scale, 20 * scale);
+      context.strokeRect(-10 * scale, -10 * scale, 20 * scale, 20 * scale);
+      context.rotate(-Math.PI / 4);
+      context.fillStyle = bonus.color;
+      context.font = Math.round(13 * scale) + 'px "Geist Pixel", monospace';
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(bonus.symbol, 0, 1);
+      context.restore();
     }
 
     function drawThreatIcon(context, threat, x, y, scale) {
@@ -871,18 +1008,21 @@
       }
       gameContext.strokeStyle = "rgba(104,204,88,.18)";
       gameContext.beginPath(); gameContext.moveTo(0, gameHeight - 28); gameContext.lineTo(gameWidth, gameHeight - 28); gameContext.stroke();
-      shots.forEach(function (shot) { gameContext.fillStyle = "#f0bf00"; gameContext.fillRect(Math.round(shot.x) - 2, Math.round(shot.y) - 7, 4, 12); });
+      shots.forEach(function (shot) { gameContext.fillStyle = "#f0bf00"; gameContext.fillRect(Math.round(shot.x - shot.w / 2), Math.round(shot.y) - 7, shot.w, 12); });
       threats.forEach(function (threat) {
         drawThreatIcon(gameContext, threat, Math.round(threat.x), Math.round(threat.y), 1.15);
       });
+      bonuses.forEach(function (bonus) { drawBonus(gameContext, bonus, Math.round(bonus.x), Math.round(bonus.y), 1); });
       drawRobot();
       pixelText("SCORE  " + String(score).padStart(5, "0"), 16, 23, 12, "#f7f8f8");
       pixelText("CRÉDITS  " + "■".repeat(lives), gameWidth - 16, 23, 12, lives === 1 ? "#d94a4a" : "#68cc58", "right");
       if (gameState !== "running") {
         gameContext.fillStyle = "rgba(5,8,11,.72)";
         gameContext.fillRect(0, 0, gameWidth, gameHeight);
-        pixelText(gameState === "over" ? "GAME OVER" : "BUG BLASTER", gameWidth / 2, 125, 24, gameState === "over" ? "#d94a4a" : "#68cc58", "center");
-        pixelText(gameState === "over" ? "SCORE  " + score + " · CLIQUEZ POUR REJOUER" : "CLIQUEZ POUR DÉMARRER", gameWidth / 2, 155, 11, "#f7f8f8", "center");
+        var won = gameState === "won";
+        var lost = gameState === "over";
+        pixelText(won ? "MISE EN PRODUCTION RÉUSSIE !" : lost ? "LES IMPRÉVUS ONT PRIS LE DESSUS…" : "BUG BLASTER", gameWidth / 2, 125, won || lost ? 18 : 24, won ? "#68cc58" : lost ? "#d94a4a" : "#68cc58", "center");
+        pixelText(won ? "VOTRE PROJET EST EN SERVICE" : lost ? "NOUVELLE TENTATIVE ?" : "CLIQUEZ POUR DÉMARRER", gameWidth / 2, 155, 15, "#f7f8f8", "center");
       }
     }
 
@@ -905,13 +1045,13 @@
     gameCanvas.addEventListener("pointermove", gamePointer);
     gameCanvas.addEventListener("pointerdown", function (event) {
       gamePointer(event);
-      if (gameState !== "running") resetGame(); else fire();
+      if (gameState === "ready" || gameState === "over") resetGame(); else if (gameState === "running") fire();
       gameCanvas.focus();
     });
     gameCanvas.addEventListener("keydown", function (event) {
       if (event.key !== "Enter" && event.code !== "Space") return;
       event.preventDefault();
-      if (gameState !== "running") resetGame(); else fire();
+      if (gameState === "ready" || gameState === "over") resetGame(); else if (gameState === "running") fire();
     });
     var gameLegend = shmup.querySelector("[data-shmup-legend]");
     threatTypes.forEach(function (type) {
@@ -923,6 +1063,17 @@
       gameLegend.appendChild(item);
       drawThreatIcon(icon.getContext("2d"), type, 16, 16, .85);
     });
+    var bonusLegend = shmup.querySelector("[data-shmup-bonus-legend]");
+    bonusTypes.forEach(function (type) {
+      var item = document.createElement("span");
+      var icon = document.createElement("canvas");
+      icon.width = 32; icon.height = 32;
+      item.appendChild(icon);
+      item.appendChild(document.createTextNode(type.name + " · " + type.description));
+      bonusLegend.appendChild(item);
+      drawBonus(icon.getContext("2d"), type, 16, 16, .78);
+    });
+    retryButton.addEventListener("click", resetGame);
     whenVisible([shmup], function () {
       gameVisible = true;
       resetGame();

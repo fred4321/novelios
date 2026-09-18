@@ -204,8 +204,27 @@
                 <div><strong>BUG BLASTER</strong><span>Supprime les obstacles de ton projet.</span></div>
                 <small>SOURIS POUR BOUGER · CLIC POUR TIRER</small>
               </div>
+              <div class="j01-shmup__progress" aria-label="Progression de la mise en production">
+                <div class="j01-shmup__track" aria-hidden="true"><span data-shmup-progress></span></div>
+                <ol data-shmup-steps>
+                  <li class="is-active"><span>01</span>Cadrage</li>
+                  <li><span>02</span>Préparation</li>
+                  <li><span>03</span>Déploiement</li>
+                  <li><span>04</span>Mise en service</li>
+                </ol>
+              </div>
               <canvas width="800" height="300" tabindex="0" role="img" aria-label="Bug Blaster : déplacez le robot avec la souris et cliquez pour éliminer les obstacles du projet."></canvas>
-              <div class="j01-shmup__legend" data-shmup-legend aria-label="Légende des obstacles"></div>
+              <p class="j01-shmup__status" data-shmup-status aria-live="polite">Phase 1/4 · Cadrage</p>
+              <div class="j01-shmup__result" data-shmup-result hidden aria-live="assertive">
+                <strong data-shmup-result-title></strong>
+                <span data-shmup-result-copy></span>
+                <a href="#contact" data-shmup-project-link style="font-size: 20px; font-weight:bold">Parlons de votre projet</a>
+                <button type="button" data-shmup-retry>Nouvelle tentative</button>
+              </div>
+              <div class="j01-shmup__legends">
+                <div><small>OBSTACLES</small><div class="j01-shmup__legend" data-shmup-legend aria-label="Légende des obstacles"></div></div>
+                <div><small>BONUS À RÉCUPÉRER</small><div class="j01-shmup__legend j01-shmup__legend--bonus" data-shmup-bonus-legend aria-label="Légende des bonus"></div></div>
+              </div>
             </div>
             <div class="framer-hhsndz-container" name="Marker"  style="margin-top: 30px;">
               <div class="framer-tX6Gt framer-iqiuL framer-dx7ywm framer-v-dx7ywm" name="Marker">

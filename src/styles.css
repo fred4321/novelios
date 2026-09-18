@@ -7835,8 +7835,52 @@ div {
 
 .j01-shmup__bar div { display: flex; align-items: baseline; gap: 13px }
 .j01-shmup__bar strong { color: #68cc58; font-size: 18px; line-height: 1 }
-.j01-shmup__bar span { font-size: 10px; letter-spacing: .04em }
+.j01-shmup__bar span { font-size: 19px; letter-spacing: .04em }
 .j01-shmup__bar small { font-size: 8px; white-space: nowrap }
+
+.j01-shmup__progress {
+  padding: 12px 15px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  background: #090d12;
+}
+
+.j01-shmup__track {
+  height: 3px;
+  overflow: hidden;
+  background: #202a35;
+}
+
+.j01-shmup__track span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, #1d70d9, #68cc58);
+  box-shadow: 0 0 10px rgba(104, 204, 88, .55);
+  transition: transform .25s ease;
+}
+
+.j01-shmup__progress ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.j01-shmup__progress li {
+  color: #687484;
+  font-size: 14px;
+  letter-spacing: .06em;
+  transition: color .2s ease;
+}
+
+.j01-shmup__progress li span { margin-right: 5px; color: #465465 }
+.j01-shmup__progress li.is-active { color: #f7f8f8 }
+.j01-shmup__progress li.is-active span { color: #68cc58 }
+.j01-shmup__progress li.is-complete { color: #68cc58 }
 
 .j01-shmup canvas {
   display: block;
@@ -7851,12 +7895,68 @@ div {
 
 .j01-shmup canvas:focus-visible { box-shadow: inset 0 0 0 2px #1d70d9 }
 
-.j01-shmup__legend {
+.j01-shmup__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.j01-shmup__result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 15px;
+  border-top: 1px solid rgba(104, 204, 88, .25);
+  background: rgba(104, 204, 88, .08);
+  color: #b9c3cf;
+  font-size: 10px;
+  letter-spacing: .04em;
+  text-align: center;
+}
+
+.j01-shmup__result[hidden] { display: none }
+.j01-shmup__result [hidden] { display: none }
+.j01-shmup__result strong { color: #68cc58; font-size: 19px }
+.j01-shmup__result a,
+.j01-shmup__result button { margin-top: 6px }
+.j01-shmup__result.is-lost { border-top-color: rgba(217, 74, 74, .28); background: rgba(217, 74, 74, .08) }
+.j01-shmup__result.is-lost strong { color: #ff7373 }
+.j01-shmup__result a,
+.j01-shmup__result button {
+  border: 1px solid #68cc58;
+  padding: 7px 10px;
+  color: #081008;
+  background: #68cc58;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.j01-shmup__result button { border-color: #d94a4a; background: #d94a4a; color: #fff }
+
+.j01-shmup__legends {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: 2fr 1fr;
   border-top: 1px solid rgba(255, 255, 255, .08);
   background: #090d12;
 }
+
+.j01-shmup__legends > div + div { border-left: 1px solid rgba(255, 255, 255, .08) }
+.j01-shmup__legends small { display: block; padding: 7px 8px 0; color: #5f6b79; font-size: 10px; letter-spacing: .12em }
+
+.j01-shmup__legend {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.j01-shmup__legend--bonus { grid-template-columns: repeat(2, minmax(0, 1fr)) }
 
 .j01-shmup__legend span {
   display: flex;
@@ -7879,7 +7979,12 @@ div {
   .j01-shmup { margin-bottom: 34px }
   .j01-shmup__bar div { align-items: flex-start; flex-direction: column; gap: 6px }
   .j01-shmup__bar small { display: none }
+  .j01-shmup__progress li { font-size: 7px }
+  .j01-shmup__progress li span { display: none }
   .j01-shmup canvas { aspect-ratio: 4 / 2.2 }
+  .j01-shmup__legends { grid-template-columns: 1fr }
+  .j01-shmup__legends > div + div { border-top: 1px solid rgba(255, 255, 255, .08); border-left: 0 }
   .j01-shmup__legend { grid-template-columns: repeat(4, 1fr) }
+  .j01-shmup__legend--bonus { grid-template-columns: repeat(2, 1fr) }
   .j01-shmup__legend span:nth-child(-n+4) { border-bottom: 1px solid rgba(255, 255, 255, .06) }
 }
