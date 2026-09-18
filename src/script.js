@@ -718,7 +718,7 @@
     ];
     var score = 0;
     var lives = 3;
-    var deploymentGoal = 10000;
+    var deploymentGoal = 7000;
     var phases = ["Cadrage", "Préparation", "Déploiement", "Mise en service"];
     var bonusTypes = [
       { name: "ANTICIPATION", color: "#57d7ff", symbol: "A", description: "obstacles ralentis" },
