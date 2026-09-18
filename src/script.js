@@ -702,7 +702,7 @@
     var gameContext = gameCanvas.getContext("2d");
     var gameWidth = gameCanvas.width;
     var gameHeight = gameCanvas.height;
-    var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 34, h: 32 };
+    var robot = { x: 400, y: 245, tx: 400, ty: 245, w: 38, h: 34 };
     var shots = [];
     var threats = [];
     var bonuses = [];
@@ -749,7 +749,7 @@
 
     function gamePointer(event) {
       var rect = gameCanvas.getBoundingClientRect();
-      robot.tx = Math.max(18, Math.min(gameWidth - 18, (event.clientX - rect.left) * gameWidth / rect.width));
+      robot.tx = Math.max(22, Math.min(gameWidth - 22, (event.clientX - rect.left) * gameWidth / rect.width));
       robot.ty = Math.max(55, Math.min(gameHeight - 20, (event.clientY - rect.top) * gameHeight / rect.height));
     }
 
@@ -774,8 +774,8 @@
 
     function fire() {
       var reinforced = performance.now() < wideUntil;
-      shots.push({ x: robot.x - (reinforced ? 13 : 7), y: robot.y - 15, w: reinforced ? 9 : 4 });
-      shots.push({ x: robot.x + (reinforced ? 13 : 7), y: robot.y - 15, w: reinforced ? 9 : 4 });
+      shots.push({ x: robot.x - 16, y: robot.y - 15, w: reinforced ? 9 : 4 });
+      shots.push({ x: robot.x + 16, y: robot.y - 15, w: reinforced ? 9 : 4 });
     }
 
     function spawnThreat(now) {
@@ -906,39 +906,70 @@
       gameContext.fillText(text, x, y);
     }
 
-    function drawRobot() {
+    function drawShip() {
       var x = Math.round(robot.x), y = Math.round(robot.y);
+      var enginePulse = reduceMotion ? 3 : 3 + Math.round((Math.sin(performance.now() * .018) + 1) * 2);
       gameContext.save();
       gameContext.translate(x, y);
-      gameContext.scale(.84, .84);
-      x = 0; y = 0;
-      // Antenne et oreilles.
-      gameContext.fillStyle = "#68cc58";
-      gameContext.fillRect(x - 2, y - 24, 4, 5);
-      gameContext.fillRect(x - 4, y - 27, 8, 4);
-      gameContext.fillStyle = "#47739f";
-      gameContext.fillRect(x - 22, y - 14, 5, 12);
-      gameContext.fillRect(x + 17, y - 14, 5, 12);
-      // Tête, visage et yeux.
+      // Halo des doubles propulseurs.
+      gameContext.shadowColor = "#57d7ff";
+      gameContext.shadowBlur = 9;
+      gameContext.fillStyle = "#57d7ff";
+      gameContext.fillRect(-10, 13, 5, enginePulse + 3);
+      gameContext.fillRect(5, 13, 5, enginePulse + 3);
+      gameContext.fillStyle = "#d8f8ff";
+      gameContext.fillRect(-9, 13, 3, enginePulse);
+      gameContext.fillRect(6, 13, 3, enginePulse);
+      gameContext.shadowBlur = 0;
+
+      // Ailes angulaires et dérives d'un chasseur spatial vu du dessus.
+      gameContext.fillStyle = "#42556b";
+      gameContext.beginPath();
+      gameContext.moveTo(-4, -12);
+      gameContext.lineTo(-21, 5);
+      gameContext.lineTo(-21, 15);
+      gameContext.lineTo(-7, 10);
+      gameContext.lineTo(0, 17);
+      gameContext.lineTo(7, 10);
+      gameContext.lineTo(21, 15);
+      gameContext.lineTo(21, 5);
+      gameContext.lineTo(4, -12);
+      gameContext.closePath();
+      gameContext.fill();
+      gameContext.fillStyle = "#26384c";
+      gameContext.fillRect(-21, 7, 6, 8);
+      gameContext.fillRect(15, 7, 6, 8);
+      gameContext.fillRect(-17, 2, 5, 4);
+      gameContext.fillRect(12, 2, 5, 4);
+
+      // Fuselage effilé, blindage clair et cockpit.
+      gameContext.fillStyle = "#9aabba";
+      gameContext.beginPath();
+      gameContext.moveTo(0, -20);
+      gameContext.lineTo(7, -4);
+      gameContext.lineTo(6, 13);
+      gameContext.lineTo(0, 17);
+      gameContext.lineTo(-6, 13);
+      gameContext.lineTo(-7, -4);
+      gameContext.closePath();
+      gameContext.fill();
+      gameContext.fillStyle = "#d3dde4";
+      gameContext.fillRect(-2, -17, 4, 9);
+      gameContext.fillStyle = "#0b1724";
+      gameContext.fillRect(-4, -7, 8, 9);
+      gameContext.fillStyle = "#59a8ff";
+      gameContext.fillRect(-2, -6, 4, 5);
+
+      // Marquages d'escadrille et canons laser latéraux.
       gameContext.fillStyle = "#1d70d9";
-      gameContext.fillRect(x - 18, y - 19, 36, 20);
-      gameContext.fillStyle = "#72b8ff";
-      gameContext.fillRect(x - 13, y - 14, 26, 10);
-      gameContext.fillStyle = "#071019";
-      gameContext.fillRect(x - 9, y - 11, 5, 5);
-      gameContext.fillRect(x + 4, y - 11, 5, 5);
-      gameContext.fillRect(x - 5, y - 2, 10, 3);
-      // Corps, cœur et bras-canons.
-      gameContext.fillStyle = "#175aa9";
-      gameContext.fillRect(x - 14, y + 2, 28, 17);
-      gameContext.fillRect(x - 22, y + 4, 8, 12);
-      gameContext.fillRect(x + 14, y + 4, 8, 12);
+      gameContext.fillRect(-13, 5, 5, 3);
+      gameContext.fillRect(8, 5, 5, 3);
+      gameContext.fillStyle = "#d7e3ec";
+      gameContext.fillRect(-18, -1, 3, 11);
+      gameContext.fillRect(15, -1, 3, 11);
       gameContext.fillStyle = "#68cc58";
-      gameContext.fillRect(x - 3, y + 7, 6, 6);
-      // Propulseurs.
-      gameContext.fillStyle = "#f0bf00";
-      gameContext.fillRect(x - 11, y + 19, 7, 7);
-      gameContext.fillRect(x + 4, y + 19, 7, 7);
+      gameContext.fillRect(-18, -3, 3, 3);
+      gameContext.fillRect(15, -3, 3, 3);
       gameContext.restore();
       if (performance.now() < shieldUntil) {
         gameContext.save();
@@ -1017,7 +1048,7 @@
         drawThreatIcon(gameContext, threat, Math.round(threat.x), Math.round(threat.y), 1.15);
       });
       bonuses.forEach(function (bonus) { drawBonus(gameContext, bonus, Math.round(bonus.x), Math.round(bonus.y), 1); });
-      drawRobot();
+      drawShip();
       pixelText("SCORE  " + String(score).padStart(5, "0"), 16, 23, 12, "#f7f8f8");
       pixelText("CRÉDITS  " + "■".repeat(lives), gameWidth - 16, 23, 12, lives === 1 ? "#d94a4a" : "#68cc58", "right");
       if (gameState !== "running") {
