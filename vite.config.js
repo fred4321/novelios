@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
-import compression from 'vite-plugin-compression'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 
 export default defineConfig({
@@ -17,10 +16,7 @@ export default defineConfig({
             jpeg: { quality: 80 },
             webp: { quality: 80 },
             avif: { quality: 70 },
-        }),
-        // Compression des assets statiques (Brotli + Gzip)
-        compression({ algorithm: 'brotliCompress', ext: '.br' }),
-        compression({ algorithm: 'gzip', ext: '.gz' }),
+        })
     ],
 
     build: {
