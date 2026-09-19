@@ -2938,7 +2938,7 @@ NavigationContainer [data-framer-component-type=NavigationContainer]>*,
   width: 100%;
   max-width: 1120px;
   height: min-content;
-  padding: 0 0 40px;
+  padding: 0 0 0px;
   display: flex;
   position: relative
 }
