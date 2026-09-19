@@ -27,7 +27,6 @@
         "vite-plugin-html": "^3.2.2"
     },
     "dependencies": {
-        "vite-plugin-compression": "^0.5.1",
         "vite-plugin-image-optimizer": "^2.0.3"
     }
 }
